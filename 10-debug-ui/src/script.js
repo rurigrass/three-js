@@ -32,8 +32,8 @@ const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
 //Debug position + rotation
-gui.add(mesh.position, "x").min(-3.1).max(3.1).step(0.01).name("left/right");
-gui.add(mesh.position, "y").min(-3.1).max(3.1).step(0.01).name("down/up");
+gui.add(mesh.position, "x").min(-3.1).max(3.2).step(0.01).name("left/right");
+gui.add(mesh.position, "y").min(-3.1).max(3.2).step(0.01).name("down/up");
 gui.add(mesh.position, "z").min(-6.2).max(2.33).step(0.01).name("far/near");
 gui.add(mesh.rotation, "x", -3.2, 3.2, 0.1);
 gui.add(mesh.rotation, "y", -3.2, 3.2, 0.1);
