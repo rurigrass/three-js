@@ -39,20 +39,34 @@ const roughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
 const ambientOcclusionTexture = textureLoader.load(
   "/textures/door/ambientOcclusion.jpg"
 );
+const checkerboard = textureLoader.load("/textures/checkerboard-8x8.png");
+const minecraft = textureLoader.load("/textures/minecraft.png");
 
-colorTexture.repeat.x = 2;
-colorTexture.repeat.y = 3;
-colorTexture.wrapS = THREE.MirroredRepeatWrapping;
-colorTexture.wrapT = THREE.MirroredRepeatWrapping;
+// // this is the preset number of repeats of the texture on the surface
+// colorTexture.repeat.x = 2;
+// colorTexture.repeat.y = 3;
+// // this makes the texture mirrored
+// colorTexture.wrapS = THREE.MirroredRepeatWrapping;
+// colorTexture.wrapT = THREE.MirroredRepeatWrapping;
 
-colorTexture.offset.x = 0.5;
-colorTexture.offset.y = 0.5;
+// // This offsets the alignment of the texture
+// colorTexture.offset.x = 0.5;
+// colorTexture.offset.y = 0.5;
 
-colorTexture.rotation = Math.PI * 1;
+// // this is the preset rotation
+// colorTexture.rotation = Math.PI * 1;
 
-//This moves the rotation pivot to the center.
-colorTexture.center.x = 0.5;
-colorTexture.center.y = 0.5;
+// //This moves the rotation pivot to the center.
+// colorTexture.center.x = 0.5;
+// colorTexture.center.y = 0.5;
+
+// // not sure what mipmapping does exactly but u dont need it if you are using minfilter or nearestfilter
+minecraft.generateMipmaps = false;
+// // this is filtering - i think it stops blurriness or makes bluriness
+// minecraft.minFilter = THREE.LinearFilter;
+minecraft.minFilter = THREE.NearestFilter;
+// // this magfilter makes it sharp like minecraft
+minecraft.magFilter = THREE.NearestFilter;
 
 /**
  * DEBUG - GUI
@@ -73,7 +87,7 @@ const scene = new THREE.Scene();
  */
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 console.log(geometry.attributes.uv);
-const material = new THREE.MeshBasicMaterial({ map: colorTexture });
+const material = new THREE.MeshBasicMaterial({ map: minecraft });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
