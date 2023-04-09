@@ -11,6 +11,8 @@ const gui = new GUI();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+
 const doorColorTexture = textureLoader.load("/textures/door/color.jpg");
 const doorAlphaTexture = textureLoader.load("/textures/door/alpha.jpg");
 const doorAmbientOcclusionTexture = textureLoader.load(
@@ -25,6 +27,15 @@ const gradientTexture = textureLoader.load("/textures/gradients/5.jpg");
 gradientTexture.minFilter = THREE.NearestFilter;
 gradientTexture.magFilter = THREE.NearestFilter;
 gradientTexture.generateMipmaps = false;
+
+const environmentMapTexture = cubeTextureLoader.load([
+  '/textures/environmentMaps/4/px.png',
+  '/textures/environmentMaps/4/nx.png',
+  '/textures/environmentMaps/4/py.png',
+  '/textures/environmentMaps/4/ny.png',
+  '/textures/environmentMaps/4/pz.png',
+  '/textures/environmentMaps/4/nz.png'
+]);
 
 /**
  * Base
@@ -115,20 +126,27 @@ window.addEventListener("resize", () => {
 // material.gradientMap = gradientTexture;
 
 // // MESH STANDARD MATERIAL
+// const material = new THREE.MeshStandardMaterial();
+// material.metalness = 0;
+// material.roughness = 1;
+// material.map = doorColorTexture;
+// material.aoMap = doorAmbientOcclusionTexture;
+// material.aoMapIntensity = 1;
+// material.displacementMap = doorHeightTexture;
+// material.displacementScale = 0.05;
+// material.roughnessMap = doorRoughNessTexture;
+// material.metalnessMap = doorMetalnessTexture;
+// material.normalMap = doorNormalTexture;
+// material.normalScale.set(0.5, 0.5);
+// material.transparent = true;
+// material.alphaMap = doorAlphaTexture;
+
+
+// // 
 const material = new THREE.MeshStandardMaterial();
-material.metalness = 0;
-material.roughness = 1;
-material.map = doorColorTexture;
-material.aoMap = doorAmbientOcclusionTexture;
-material.aoMapIntensity = 1;
-material.displacementMap = doorHeightTexture;
-material.displacementScale = 0.05;
-material.roughnessMap = doorRoughNessTexture;
-material.metalnessMap = doorMetalnessTexture;
-material.normalMap = doorNormalTexture;
-material.normalScale.set(0.5, 0.5);
-material.transparent = true;
-material.alphaMap = doorAlphaTexture;
+material.metalness = 0.7;
+material.roughness = 0.2;
+material.envMap = environmentMapTexture
 
 /**
  * Objects
