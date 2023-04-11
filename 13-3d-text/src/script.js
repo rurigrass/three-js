@@ -27,7 +27,8 @@ scene.add(axesHelper);
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const matcapTexture = textureLoader.load('/textures/matcaps/3.png')
+const matcapTexture = textureLoader.load("/textures/matcaps/3.png");
+const matcapTexture2 = textureLoader.load("/textures/matcaps/5.png");
 
 /**
  * Fonts
@@ -53,11 +54,41 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
   //     - textGeometry.boundingBox.max.z * 0.5
   //   );
   textGeometry.center();
-  const textMaterial = new THREE.MeshMatcapMaterial();
-  textMaterial.matcap = matcapTexture;
-  const text = new THREE.Mesh(textGeometry, textMaterial);
+  const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
+  //   textMaterial.matcap = matcapTexture;
+  const text = new THREE.Mesh(textGeometry, material);
   scene.add(text);
-  gui.add(textMaterial, "wireframe");
+  // gui.add(textMaterial, "wireframe");
+
+  // // 100 DONUTS 0 0 0 0 0 0 0 o o oo
+  console.time("donuts");
+  const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+    const donutMaterial = new THREE.MeshMatcapMaterial({
+      matcap: matcapTexture2,
+    });
+  console.timeEnd("donuts");
+  for (let i = 0; i <= 100; i++) {
+    const donut = new THREE.Mesh(donutGeometry, donutMaterial);
+  
+    //RANDOM POSITIONS
+    donut.position.x = (Math.random() - 0.5) * 7;
+    donut.position.y = (Math.random() - 0.5) * 7;
+    donut.position.z = (Math.random() - 0.5) * 7;
+  
+    //RANDOM ROTATIONS
+    donut.rotation.x = Math.random() * Math.PI;
+    donut.rotation.y = Math.random() * Math.PI;
+  
+    //RANDOM SCALES (SIZES)
+    const scale = Math.random();
+    // donut.scale.x = scale
+    // donut.scale.y = scale
+    // donut.scale.z = scale
+    donut.scale.set(scale, scale, scale);
+  
+    //ADD TO SCENE
+    scene.add(donut);
+  }
 });
 
 /**
