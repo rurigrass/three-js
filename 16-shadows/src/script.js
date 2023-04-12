@@ -15,6 +15,13 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader();
+const bakedShadow = textureLoader.load("/textures/bakedShadow.jpg");
+const simpleShadow = textureLoader.load("/textures/simpleShadow.jpg");
+
+/**
  * Lights
  */
 // Ambient light
@@ -114,19 +121,24 @@ scene.add(pointLight);
 
 pointLight.castShadow = false;
 //adjust shadow quality
-pointLight.shadow.mapSize.width = 1024
-pointLight.shadow.mapSize.height = 1024
+pointLight.shadow.mapSize.width = 1024;
+pointLight.shadow.mapSize.height = 1024;
 //how far the shadow can go
-pointLight.shadow.camera.near = 0.1
-pointLight.shadow.camera.far = 5
+pointLight.shadow.camera.near = 0.1;
+pointLight.shadow.camera.far = 5;
 //blur of the shadow
-pointLight.shadow.radius = 10
+pointLight.shadow.radius = 10;
 
 const pointLightCameraHelper = new THREE.CameraHelper(pointLight.shadow.camera);
-pointLightCameraHelper.visible = false
+pointLightCameraHelper.visible = false;
 scene.add(pointLightCameraHelper);
 
-gui.add(pointLight, "intensity").min(0).max(2).step(0.1).name("pointlight intensity")
+gui
+  .add(pointLight, "intensity")
+  .min(0)
+  .max(2)
+  .step(0.1)
+  .name("pointlight intensity");
 
 /**
  * Materials
@@ -140,14 +152,36 @@ gui.add(material, "roughness").min(0).max(1).step(0.001);
  * Objects
  */
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
+sphere.position.set(1, 0, 1);
 sphere.castShadow = true;
 
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(5, 5),
+  // new THREE.MeshBasicMaterial({
+  //     map: bakedShadow
+  // })
+  material
+);
 plane.rotation.x = -Math.PI * 0.5;
 plane.position.y = -0.5;
 plane.receiveShadow = true;
 
 scene.add(sphere, plane);
+
+//Adding the Baked simpleShadow
+const sphereShadow = new THREE.Mesh(
+  new THREE.PlaneGeometry(1.5, 1.5),
+  new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    alphaMap: simpleShadow,
+  })
+);
+
+sphereShadow.rotation.x = -Math.PI * 0.5;
+sphereShadow.position.y = plane.position.y + 0.01;
+
+scene.add(sphereShadow);
 
 /**
  * Sizes
@@ -209,6 +243,16 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  //update the sphere
+  sphere.position.x = Math.cos(elapsedTime) * 1.5;
+  sphere.position.z = Math.sin(elapsedTime) * 1.5;
+  sphere.position.y = Math.abs(Math.sin(elapsedTime * 3));
+
+  //update the shadow
+  sphereShadow.position.x = sphere.position.x
+  sphereShadow.position.z = sphere.position.z
+  sphereShadow.material.opacity = (1 - sphere.position.y) * 0.3
 
   // Update controls
   controls.update();
