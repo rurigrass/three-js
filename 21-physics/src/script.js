@@ -1,6 +1,7 @@
 import * as dat from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import CANNON from "cannon";
 
 THREE.ColorManagement.enabled = false;
 
@@ -32,6 +33,11 @@ const environmentMapTexture = cubeTextureLoader.load([
   "/textures/environmentMaps/0/pz.png",
   "/textures/environmentMaps/0/nz.png",
 ]);
+
+/**
+ * PHYSICS
+ */
+const world = new CANNON.World();
 
 /**
  * Test sphere
