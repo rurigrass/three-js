@@ -1,7 +1,7 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import CANNON from "cannon";
+import * as CANNON from "cannon-es";
 
 THREE.ColorManagement.enabled = false;
 
@@ -21,6 +21,31 @@ debugObject.createSphere = () => {
 
 gui.add(debugObject, "createSphere");
 
+debugObject.createBox = () => {
+  createBox(Math.random(), Math.random(), Math.random(), {
+    x: (Math.random() - 0.5) * 5,
+    y: 3,
+    z: (Math.random() - 0.5) * 5,
+  });
+};
+
+gui.add(debugObject, "createBox");
+
+debugObject.reset = () => {
+  console.log("reset");
+  //loop through our objects and remove them.
+  for (const object of objectsToUpdate) {
+    //remove body - physics world
+    object.body.removeEventListener("collide", playHitSound);
+    world.removeBody(object.body);
+    //remove mesh
+    scene.remove(object.mesh);
+  }
+  //empty objectsToUpdate
+  objectsToUpdate.splice(0, objectsToUpdate.length);
+};
+gui.add(debugObject, "reset");
+
 /**
  * Base
  */
@@ -29,6 +54,26 @@ const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
+
+/**
+ * SOUNDS
+ */
+
+const hitSound = new Audio("/sounds/hit.mp3");
+const playHitSound = (collision) => {
+  //this measures the strength of the impact - sound only plays if impact is strong
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+  //resets sound to start when new one plays
+  if (impactStrength > 2.5) {
+    hitSound.volume = (Math.random() + 0.5) / 1.5;
+    hitSound.currentTime = 0;
+    hitSound.play();
+  } else if (impactStrength > 1.5 && impactStrength < 2.5) {
+    hitSound.volume = 0.25;
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
 
 /**
  * Textures
@@ -51,10 +96,14 @@ const environmentMapTexture = cubeTextureLoader.load([
 
 //WORLD
 const world = new CANNON.World();
+//broadphase - this is better for performance - not sure why
+world.broadphase = new CANNON.SAPBroadphase(world);
+// improves performance - ones that dont move sleep
+world.allowSleep = true;
 //gravity is on y axis, -9.82 is the earth gravity constant
 world.gravity.set(0, -9.82, 0);
 
-//MATERIALS - in the physics sense
+//MATERIALS - in the physics senseb
 // const concreteMaterial = new CANNON.Material("concrete");
 // const plasticMaterial = new CANNON.Material("plastic");
 // const concretePlasticContactMaterial = new CANNON.ContactMaterial(
@@ -227,6 +276,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const objectsToUpdate = [];
 
+// SPHERE SPHERE SPHERE
 const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
 const sphereMaterial = new THREE.MeshStandardMaterial({
   metalness: 0.3,
@@ -254,7 +304,7 @@ const createSphere = (radius, position) => {
   scene.add(mesh);
 
   //Cannon.js body
-  const shape = new CANNON.Sphere(0.5);
+  const shape = new CANNON.Sphere(radius);
   const body = new CANNON.Body({
     mass: 1,
     position: new CANNON.Vec3(0, 3, 0),
@@ -263,6 +313,7 @@ const createSphere = (radius, position) => {
     // material: defaultMaterial,
   });
   body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
   world.addBody(body);
 
   //Save in Objects to update
@@ -272,21 +323,42 @@ const createSphere = (radius, position) => {
   });
 };
 
-const createBox = () => {
+// BOX BOX BOX
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const boxMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture,
+});
+const createBox = (width, height, depth, position) => {
   //THREE.js mesh
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(20, 20, 20),
-    new THREE.MeshStandardMaterial({
-      metalness: 0.3,
-      roughness: 0.4,
-      envMap: environmentMapTexture,
-    })
-  );
+  const mesh = new THREE.Mesh(boxGeometry, boxMaterial);
+  mesh.scale.set(width, height, depth);
+  mesh.castShadow = true;
+  mesh.position.copy(position);
+  scene.add(mesh);
   //CANNON body
-  const shape = new CANNON.Box(0.5);
-  const body = new CANNON.body();
+  const shape = new CANNON.Box(
+    new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5)
+  );
+  const body = new CANNON.Body({
+    mass: 1,
+    position: new CANNON.Vec3(0, 3, 0),
+    shape,
+  });
+  body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
+  world.addBody(body);
+
+  //Save in Objects to update
+  objectsToUpdate.push({
+    mesh,
+    body,
+  });
 };
 
+//RUN DA FUNCTIONS
+createBox(1, 1, 1, { x: 1, y: 3, z: 1 });
 createSphere(0.5, { x: -1, y: 3, z: -1 });
 // createSphere(0.5, { x: 1, y: 3, z: 1 });
 // createSphere(0.5, { x: -1, y: 3, z: 1 });
@@ -313,6 +385,7 @@ const tick = () => {
   //doing this but for multiple objects
   for (const object of objectsToUpdate) {
     object.mesh.position.copy(object.body.position);
+    object.mesh.quaternion.copy(object.body.quaternion);
   }
 
   // Update controls
