@@ -6,7 +6,9 @@ import {
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useRef } from "react";
 // import { useState } from "react";
 
 //IMPORT THE TORUS AND MATERIAL FROM THREE FOR PERFORMANCE
@@ -15,6 +17,8 @@ const material1 = new THREE.MeshMatcapMaterial();
 const material2 = new THREE.MeshMatcapMaterial();
 
 export default function Experience() {
+  const donutsGroup = useRef();
+
   //Saving the torus geometry in a usestate for performance. Set in JSX using setTorusGeometry its then called within the mesh
   // const [torusGeometry, setTorusGeometry] = useState();
   // const [material, setMaterial] = useState();
@@ -38,6 +42,12 @@ export default function Experience() {
     material1.needsUpdate = true;
     material2.needsUpdate = true;
   }, []);
+
+  useFrame((state, delta) => {
+    for (const donut of donutsGroup.current.children) {
+      donut.rotation.y += delta * 0.2;
+    }
+  });
 
   return (
     <>
@@ -70,20 +80,22 @@ export default function Experience() {
         </Text3D>
       </Center>
 
-      {[...Array(100)].map((x, i) => (
-        <mesh
-          key={i}
-          geometry={torusGeometry}
-          material={material2}
-          scale={0.2 + Math.random() * 0.2}
-          position={[
-            (Math.random() - 0.5) * 10,
-            (Math.random() - 0.5) * 10,
-            (Math.random() - 0.5) * 10,
-          ]}
-          rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}
-        />
-      ))}
+      <group ref={donutsGroup}>
+        {[...Array(100)].map((x, i) => (
+          <mesh
+            key={i}
+            geometry={torusGeometry}
+            material={material2}
+            scale={0.2 + Math.random() * 0.2}
+            position={[
+              (Math.random() - 0.5) * 10,
+              (Math.random() - 0.5) * 10,
+              (Math.random() - 0.5) * 10,
+            ]}
+            rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}
+          />
+        ))}
+      </group>
     </>
   );
 }
