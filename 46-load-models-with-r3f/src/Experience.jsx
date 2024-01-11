@@ -5,6 +5,7 @@ import Model from "./Model";
 import { Suspense } from "react";
 import Placeholder from "./Placeholder";
 import Hamburger from "./Hamburger";
+import Fox from "./Fox";
 
 export default function Experience() {
   return (
@@ -34,7 +35,10 @@ export default function Experience() {
       {/* THIS WILL LOAD WITH SUSPENSE */}
       <Suspense fallback={<Placeholder position-y={0.5} scale={[2, 3, 2]} />}>
         {/* <Model /> */}
-        <Hamburger />
+        <Hamburger scale={0.35} position={[1, -1, -0.5]} />
+      </Suspense>
+      <Suspense fallback={<Placeholder position-y={0.5} scale={[2, 3, 2]} />}>
+        <Fox />
       </Suspense>
       {/* <primitive object={hamburgerDracoModel.scene} scale={5} position-y={-1} /> */}
       <Shadow castShadow />
