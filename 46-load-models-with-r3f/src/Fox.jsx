@@ -6,7 +6,6 @@ export default function Fox() {
   //NEW WAY TO LOAD WITH DREI - even supports draco whatever that is.
   const FoxModel = useGLTF("./Fox/glTF/Fox.gltf");
   const animations = useAnimations(FoxModel.animations, FoxModel.scene);
-  console.log(animations);
 
   //Animation order on open:
   //   useEffect(() => {
@@ -28,7 +27,10 @@ export default function Fox() {
 
   useEffect(() => {
     const action = animations.actions[animationName];
-    action.play();
+    action.reset().fadeIn(0.5).play();
+    return () => {
+      action.fadeOut(0.5);
+    };
   }, [animationName]);
 
   return (
