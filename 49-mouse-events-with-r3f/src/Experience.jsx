@@ -24,7 +24,13 @@ export default function Experience() {
       <directionalLight position={[1, 2, 3]} intensity={4.5} />
       <ambientLight intensity={1.5} />
 
-      <mesh position-x={-2}>
+      <mesh
+        position-x={-2}
+        onClick={(event) => {
+          //THIS BELOW will stop the user from clicking anything behind this object.
+          event.stopPropagation();
+        }}
+      >
         <sphereGeometry />
         <meshStandardMaterial color={"orange"} />
       </mesh>
@@ -32,7 +38,7 @@ export default function Experience() {
       <mesh
         ref={cube}
         //EVENT below is onclick function
-        //   onClick={changeColor}
+        // onClick={changeColor}
         //EVENT below is on left click function
         // onContextMenu={changeColor}
         //EVENT below is ondoubleclick
@@ -51,8 +57,7 @@ export default function Experience() {
         //EVENT onPointerMove is triggered on each frame
         // onPointerMove={changeColor}
         //EVENT below onPointerMiss - calls it if you point outside of the cube - useful for unselecting
-        // onPointerMissed={changeColor}
-
+        onPointerMissed={changeColor}
         position-x={2}
         scale={1.5}
       >
