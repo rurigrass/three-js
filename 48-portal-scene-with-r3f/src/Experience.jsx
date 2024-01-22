@@ -8,7 +8,6 @@ export default function Experience() {
 
       <mesh scale={1.5}>
         <boxGeometry />
-        <boxGeometry />
 
         <meshNormalMaterial />
       </mesh>
