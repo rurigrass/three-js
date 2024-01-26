@@ -1,4 +1,9 @@
-import { OrbitControls, useGLTF, useTexture } from "@react-three/drei";
+import {
+  OrbitControls,
+  RoundedBox,
+  useGLTF,
+  useTexture,
+} from "@react-three/drei";
 
 export default function Experience() {
   const { nodes } = useGLTF("./model/portal.glb");
@@ -11,9 +16,10 @@ export default function Experience() {
 
       {/* <primitive object={nodes.baked} /> */}
 
-      <mesh geometry={nodes.baked.geometry}>
+      {/* <mesh geometry={nodes.baked.geometry}>
         <meshBasicMaterial map={bakedTexture} />
-      </mesh>
+      </mesh> */}
+      <RoundedBox args={[1, 0.5, 0.1]} />
     </>
   );
 }
