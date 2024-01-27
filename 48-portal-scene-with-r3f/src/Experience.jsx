@@ -20,6 +20,7 @@ export default function Experience() {
         <meshBasicMaterial map={bakedTexture} />
       </mesh> */}
       <RoundedBox args={[1, 0.5, 0.1]} />
+      <RoundedBox args={[1, 0.5, 0.1]} />
     </>
   );
 }
