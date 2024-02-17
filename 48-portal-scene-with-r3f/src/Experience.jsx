@@ -12,6 +12,7 @@ export default function Experience() {
     <>
       <color args={["#030202"]} attach="background" />
       <OrbitControls makeDefault />
+      <OrbitControls makeDefault />
       {/* <directionalLight intensity={3.5} position={[-1, 1, 1]} /> */}
 
       {/* <primitive object={nodes.baked} /> */}
