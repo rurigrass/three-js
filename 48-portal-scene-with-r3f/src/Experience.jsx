@@ -1,6 +1,8 @@
 import {
+  Center,
   OrbitControls,
   RoundedBox,
+  Sparkles,
   useGLTF,
   useTexture,
 } from "@react-three/drei";
@@ -8,28 +10,50 @@ import {
 export default function Experience() {
   const { nodes } = useGLTF("./model/portal.glb");
   const bakedTexture = useTexture("./model/baked.jpg");
+  // bakedTexture.flipY = false;
+  console.log(nodes);
+
   return (
     <>
       <color args={["#030202"]} attach="background" />
       <OrbitControls makeDefault />
-      <OrbitControls makeDefault />
-      {/* <directionalLight intensity={3.5} position={[-1, 1, 1]} /> */}
+      <directionalLight intensity={3.5} position={[-1, 1, 1]} />
 
       {/* <primitive object={nodes.baked} /> */}
+      <Center>
+        {/* MAIN */}
+        <mesh geometry={nodes.baked.geometry}>
+          <meshBasicMaterial map={bakedTexture} map-flipY={false} />
+        </mesh>
 
-      {/* <mesh geometry={nodes.baked.geometry}>
-        <meshBasicMaterial map={bakedTexture} />
-      </mesh> */}
-      <>
-        <ambientLight intensity={0.2} />
-        <directionalLight intensity={3.5} position={[1, 0.5, -0.4]} />
-        <MenuButtons position={[isMobile ? 0 : 1, 0, 2]} />
-        <Planet position={[isMobile ? 0 : -1, 0, 6]} />
-      </>
+        {/* POLELIGHT A */}
+        <mesh
+          geometry={nodes.poleLightA.geometry}
+          position={nodes.poleLightA.position}
+        >
+          <meshBasicMaterial color={"#ffffe5"} />
+          <Sparkles />
+        </mesh>
 
-      <RoundedBox args={[1, 0.5, 0.1]} />
-      <RoundedBox args={[1, 0.5, 0.1]} />
-      <RoundedBox args={[1, 0.5, 0.1]} />
+        {/* POLELIGHT B */}
+        <mesh
+          geometry={nodes.poleLightB.geometry}
+          position={nodes.poleLightB.position}
+        >
+          <meshBasicMaterial color={"#ffffe5"} />
+          <Sparkles />
+        </mesh>
+
+        {/* PORTAL */}
+        <mesh
+          geometry={nodes.portalLight.geometry}
+          position={nodes.portalLight.position}
+          rotation={nodes.portalLight.rotation}
+        >
+          <meshBasicMaterial color={"#A020F0"} />
+          <Sparkles />
+        </mesh>
+      </Center>
     </>
   );
 }
